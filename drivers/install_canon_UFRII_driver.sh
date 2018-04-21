@@ -1,6 +1,8 @@
 #!/bin/sh
 
-# Canon Linux UFRII driver file
+# Canon Linux UFRII driver file download Linux 64 driver from Canon
+# CA: http://www.canon.ca/en/Contact-Support/Consumer/Downloads
+# US: https://www.usa.canon.com/internet/portal/us/home/support
 
 # try locating the downloaed driver
 PKG=$(find . -maxdepth 1 -type f -name 'linux-UFRII-drv-v*-*.tar.gz' -printf '%f\n' -quit | cut -d. -f1)

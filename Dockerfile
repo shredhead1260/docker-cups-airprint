@@ -1,7 +1,8 @@
 FROM ubuntu:latest
-
+#Set this to your preferred mirror
+#ENV MIRROR http://mirror.csclub.uwaterloo.ca/ubuntu/
 # Replace archive repo with mirrors to avoid hash sum issue
-RUN sed -i 's;http://.*.ubuntu.com/ubuntu/;mirror://mirrors.ubuntu.com/mirrors.txt;g' /etc/apt/sources.list
+RUN sed -i "s;http://.*.ubuntu.com/ubuntu/;${MIRROR:-mirror://mirrors.ubuntu.com/mirrors.txt};g" /etc/apt/sources.list
 
 # Install the packages we need. Avahi will be included
 RUN apt-get update && apt-get install -y \
