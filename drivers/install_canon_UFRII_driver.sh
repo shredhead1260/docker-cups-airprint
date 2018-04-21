@@ -7,22 +7,35 @@
 # try locating the downloaed driver
 PKG=$(find . -maxdepth 1 -type f -name 'linux-UFRII-drv-v*-*.tar.gz' -printf '%f\n' -quit | cut -d. -f1)
 
-# no download driver file found
-if [ -z "${PKG}" ]; then
-  # look for extracted driver file
-  PKG=$(find . -maxdepth 1 -type d -name 'linux-UFRII-drv-v*-*' -printf '%f\n' -quit)
-fi
-
 # nothing found
 if [ -z "${PKG}" ]; then
   echo "No Canon UFRII driver found"
   exit 0
 fi
 
+# Clean up previous install
+rm -rf ${PKG}
+tar zxf ${PKG}.tar.gz
+
 # if not already unpackaged
-if [ ! -d ${PKG} ]; then
-  tar zxf ${PKG}.tar.gz
+if [ ! -x ${PKG}/install.sh ]; then
+  echo "No install.sh found after extracting the driver ${PKG}"
+  exit 1
+fi
+
+# check for i386 architecture and 
+# switch uname -m to dpkg --print-architecture
+arch=$(dpkg --print-architecture)
+if [ "i386" = "${arch}" ]; then
+  echo "Forcing Canon UFRII driver installation for ${arch}"
+  sed -i 's;uname -m;dpkg --print-architecture;g' ${PKG}/install.sh || exit 1
 fi
 
 # install it
 cd ${PKG} && echo y | ./install.sh && cd ..
+
+which -s cnsetuputil
+if [ $? -ne 0 ]; then
+  echo "Failed to install Canon UFRII driver: cnsetuputil not found"
+  exit 1
+fi
