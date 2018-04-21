@@ -1,7 +1,7 @@
 FROM ubuntu:latest
 
 # Replace archive repo with mirrors to avoid hash sum issue
-RUN sed -i 's;http://archive.ubuntu.com/ubuntu/;mirror://mirrors.ubuntu.com/mirrors.txt;g' /etc/apt/sources.list
+RUN sed -i 's;http://.*.ubuntu.com/ubuntu/;mirror://mirrors.ubuntu.com/mirrors.txt;g' /etc/apt/sources.list
 
 # Install the packages we need. Avahi will be included
 RUN apt-get update && apt-get install -y \
