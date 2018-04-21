@@ -34,8 +34,8 @@ fi
 # install it
 cd ${PKG} && echo y | ./install.sh && cd ..
 
-which -s cnsetuputil
-if [ $? -ne 0 ]; then
+check=$(which cnsetuputil)
+if [ -z "${check}" ]; then
   echo "Failed to install Canon UFRII driver: cnsetuputil not found"
   exit 1
 fi
