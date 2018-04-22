@@ -20,6 +20,10 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
+
+See:
+    https://istopwg.github.io/ippsample/api.html
+    https://developer.apple.com/bonjour/printing-specification/bonjourprinting-1.2.1.pdf
 """
 
 import cups, os, optparse, re, urlparse
@@ -111,6 +115,11 @@ class AirPrintGenerate(object):
         if self.user:
             cups.setUser(self.user)
     
+    def createTxtRecordFlag(self, key, mask, value=0):
+        record = Element('txt-record')
+        record.text = '%s=%s' % (key, {True: 'T', False: 'F'}[value & mask != 0])
+        return record
+
     def generate(self):
         if not self.host:
             conn = cups.Connection()
@@ -178,6 +187,32 @@ class AirPrintGenerate(object):
                 ptype = Element('txt-record')
                 ptype.text = 'printer-type=%s' % (hex(v['printer-type']))
                 service.append(ptype)
+
+                pcolor = self.createTxtRecordFlag('Color', cups.CUPS_PRINTER_COLOR, v['printer-type'])
+                service.append(pcolor)
+
+                pduplex = self.createTxtRecordFlag('Duplex', cups.CUPS_PRINTER_DUPLEX, v['printer-type'])
+                service.append(pduplex)
+
+                psort = self.createTxtRecordFlag('Sort', cups.CUPS_PRINTER_SORT, v['printer-type'])
+                service.append(psort)
+
+                pbind = self.createTxtRecordFlag('Bind', cups.CUPS_PRINTER_BIND, v['printer-type'])
+                service.append(pbind)
+
+                pstaple = self.createTxtRecordFlag('Staple', cups.CUPS_PRINTER_STAPLE, v['printer-type'])
+                service.append(pstaple)
+
+                # pscan = self.createTxtRecordFlag('Scan', cups.CUPS_PRINTER_MFP, v['printer-type'])
+                # service.append(pscan)
+
+                pkind = Element('txt-record')
+                kinds = ['document','photo','envelope']
+                if cups.CUPS_PRINTER_LARGE & v['printer-type']:
+                    kinds.append('large-format');
+                kinds = ','.join(kinds)
+                pkind.text = 'kind=%s' % (kinds)
+                service.append(pkind)
 
                 pdl = Element('txt-record')
                 fmts = []
