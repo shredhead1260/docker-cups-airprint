@@ -31,3 +31,6 @@ if [ ! -z "${DRV_PKG}" ]; then
 	fi
 	dpkg -i ${DRV_PKG} || exit 1
 fi
+
+# remove all pre-installed driver
+find /usr/local/Brother/Printer/ -name 'cupswrapperSetup_*' -exec {} -r  \;
