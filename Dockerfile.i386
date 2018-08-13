@@ -7,15 +7,12 @@ RUN sed -i "s;http://.*.ubuntu.com/ubuntu/;${MIRROR};g" \
 
 # Install the packages we need. Avahi will be included
 RUN apt-get update && apt-get install -y \
-	brother-lpr-drivers-extra brother-cups-wrapper-extra \
+	hplip \
 	cups \
 	cups-pdf \
 	inotify-tools \
 	python-cups \
 	python-lxml
-
-ADD drivers /tmp/drivers
-RUN cd /tmp/drivers && ./install_drivers.sh && rm -rf /tmp/drivers
 
 # Clean up after installation
 RUN rm -rf /var/lib/apt/lists/*
